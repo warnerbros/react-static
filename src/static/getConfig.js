@@ -91,6 +91,10 @@ export default function getConfig (customConfigPath) {
     outputFileRate: 100,
     // Config Overrides
     ...config,
+    dataSplitting: {
+      enabled: true,
+      ...(config.dataSplitting || {}),
+    },
     // Materialized Overrides
     paths,
     siteRoot: siteRoot || '',

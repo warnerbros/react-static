@@ -1,5 +1,5 @@
 const arraySize = 10000
-const routeSize = 10000
+const routeSize = 30000
 const propCollision = 20
 
 console.log()
@@ -8,6 +8,9 @@ console.log(
 )
 
 export default {
+  dataSplitting: {
+    enabled: false,
+  },
   getRoutes: async () => {
     const fakeData = []
 

@@ -20,13 +20,23 @@ import { poolAll } from '../utils/shared'
 //
 
 process.on('message', async payload => {
-  const { config, routes, defaultOutputFileRate } = payload
+  const { configPath, routes, defaultOutputFileRate } = payload
+  // Get the config again
+  const config = getConfig(configPath)
+  // Use the node version of the app created with webpack
+  const Comp = require(glob.sync(path.resolve(config.paths.DIST, 'static.*.js'))[0]).default
+  // Retrieve the document template
+  const DocumentTemplate = config.Document || DefaultDocument
+
   await poolAll(
     routes.map(route => async () => {
       try {
         await exportRoute({
           ...payload,
+          config,
           route,
+          Comp,
+          DocumentTemplate,
         })
         process.send({ type: 'tick' })
       } catch (err) {
@@ -39,17 +49,8 @@ process.on('message', async payload => {
   process.send({ type: 'done' })
 })
 
-async function exportRoute ({ configPath, route, siteData, clientStats }) {
+async function exportRoute ({ config, Comp, DocumentTemplate, route, siteData, clientStats }) {
   const { sharedPropsHashes, templateID, localProps, allProps, path: routePath } = route
-
-  // Get the config again
-  const config = getConfig(configPath)
-
-  // Use the node version of the app created with webpack
-  const Comp = require(glob.sync(path.resolve(config.paths.DIST, 'static.*.js'))[0]).default
-
-  // Retrieve the document template
-  const DocumentTemplate = config.Document || DefaultDocument
 
   // This routeInfo will be saved to disk, and included in the html
   // that is served for that route as well
