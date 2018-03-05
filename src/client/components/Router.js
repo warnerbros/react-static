@@ -65,7 +65,7 @@ export default class Router extends React.Component {
   }
   bootstrapRouteInfo = () =>
     (async () => {
-      if (typeof window !== 'undefined') {
+      if (typeof document !== 'undefined') {
         // Get the entry path from location
         const { href } = window.location
         const path = cleanPath(href)

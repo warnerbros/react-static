@@ -15,7 +15,7 @@ export default (...args) => {
   }
 }
 
-async function build ({ config, staging, debug, isCLI, silent = !isCLI } = {}) {
+async function build ({ config: configPath, staging, debug, isCLI, silent = !isCLI } = {}) {
   try {
     if (staging) {
       process.env.REACT_STATIC_STAGING = true
@@ -25,9 +25,7 @@ async function build ({ config, staging, debug, isCLI, silent = !isCLI } = {}) {
     }
 
     // Allow config location to be overriden
-    if (!config || typeof config === 'string') {
-      config = getConfig(config)
-    }
+    const config = getConfig(configPath)
 
     await fs.remove(config.paths.DIST)
 
@@ -65,6 +63,7 @@ async function build ({ config, staging, debug, isCLI, silent = !isCLI } = {}) {
     }
 
     await exportRoutes({
+      configPath,
       config,
       clientStats,
     })

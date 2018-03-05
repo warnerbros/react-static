@@ -88,7 +88,7 @@ export default function getConfig (customConfigPath) {
     getSiteData: () => ({}),
     renderToHtml: (render, Comp) => render(<Comp />),
     prefetchRate: 10,
-    outputFileRate: 10,
+    outputFileRate: 100,
     // Config Overrides
     ...config,
     // Materialized Overrides

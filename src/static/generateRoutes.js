@@ -14,7 +14,7 @@ import { Route } from 'react-router-dom'
 import universal, { setHasBabelPlugin } from 'react-universal-component'
 import { cleanPath } from 'react-static'
 
-${process.env.NODE_ENV === 'production'
+${process.env.REACT_STATIC_ENV === 'production'
     ? `
 
 setHasBabelPlugin()

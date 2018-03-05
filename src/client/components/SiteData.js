@@ -40,7 +40,7 @@ export default class SiteData extends React.Component {
     let siteData
 
     // Get siteInfo from window
-    if (typeof window !== 'undefined') {
+    if (typeof document !== 'undefined') {
       if (window.__routeInfo) {
         siteData = window.__routeInfo.siteData
       }
