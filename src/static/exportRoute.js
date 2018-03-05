@@ -29,7 +29,7 @@ process.on('message', async payload => {
           ...payload,
           route,
         })
-        process.send({ type: 'tick' })
+        // process.send({ type: 'tick' })
       } catch (err) {
         process.send({ type: 'error', err })
         process.exit(1)

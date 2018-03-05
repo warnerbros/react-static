@@ -13,7 +13,7 @@ import { poolAll, pathJoin } from '../utils/shared'
 
 const defaultOutputFileRate = 100
 
-const cores = OS.cpus().length
+const cores = Math.max(OS.cpus().length / 2, 1)
 
 const Bar = (len, label) =>
   new Progress(`=> ${label ? `${label} ` : ''}[:bar] :current/:total :percent :rate/s :etas `, {
@@ -166,7 +166,6 @@ export const exportRoutes = async ({ configPath, config, clientStats }) => {
   console.time(chalk.green('=> [\u2713] HTML Exported'))
 
   const tasksPerExporter = Math.floor(config.routes.length / cores)
-
   const exporters = []
   for (let i = 0; i < cores; i++) {
     exporters.push(
