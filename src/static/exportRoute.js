@@ -21,7 +21,6 @@ import { poolAll } from '../utils/shared'
 
 process.on('message', async payload => {
   const { config, routes, defaultOutputFileRate } = payload
-  console.log(routes.length)
   await poolAll(
     routes.map(route => async () => {
       try {
@@ -29,7 +28,7 @@ process.on('message', async payload => {
           ...payload,
           route,
         })
-        // process.send({ type: 'tick' })
+        process.send({ type: 'tick' })
       } catch (err) {
         process.send({ type: 'error', err })
         process.exit(1)

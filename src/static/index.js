@@ -13,7 +13,7 @@ import { poolAll, pathJoin } from '../utils/shared'
 
 const defaultOutputFileRate = 100
 
-const cores = Math.max(OS.cpus().length / 2, 1)
+const cores = Math.max(OS.cpus().length, 1)
 
 const Bar = (len, label) =>
   new Progress(`=> ${label ? `${label} ` : ''}[:bar] :current/:total :percent :rate/s :etas `, {
@@ -179,7 +179,10 @@ export const exportRoutes = async ({ configPath, config, clientStats }) => {
   await Promise.all(
     exporters.map((exporter, i) => {
       const nextCursor = cursor + tasksPerExporter
-      const routes = config.routes.slice(cursor, i - 1 < exporters.length ? nextCursor : undefined)
+      const routes = config.routes.slice(
+        cursor,
+        i - 1 < exporters.length ? nextCursor : config.routes.length
+      )
       cursor = nextCursor
       return new Promise((resolve, reject) => {
         exporter.send({
