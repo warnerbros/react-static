@@ -27,9 +27,9 @@ export const trimLeadingAndTrailingSlashes = (string = '') =>
   string.replace(REGEX_TO_REMOVE_TRAILING_SLASH, '').replace(REGEX_TO_REMOVE_LEADING_SLASH, '')
 
 export const throwErrorIfRouteIsMissingPath = route => {
-  const { path, is404 = false } = route
+  const { path } = route
 
-  if (!is404 && !path) {
+  if (!path) {
     throw new Error(`No path defined for route: ${JSON.stringify(route)}`)
   }
 }
@@ -42,9 +42,10 @@ export const createNormalizedRoute = (route, parent = {}, config = {}) => {
   const { children, ...routeWithOutChildren } = route
   const { path: parentPath = '/' } = parent
   const { tree: keepRouteChildren = false } = config
-  const { is404 = false } = route
 
   throwErrorIfRouteIsMissingPath(route)
+
+  const is404 = route.path === '404'
 
   const originalRoutePath = is404 ? PATH_404 : pathJoin(route.path)
   const routePath = is404 ? PATH_404 : pathJoin(parentPath, route.path)
@@ -129,10 +130,9 @@ export const normalizeRoutes = (routes, config = {}) => {
     consoleWarningForMutlipleRoutesWithTheSamePath(normalizedRoutes)
   }
 
-  if (force404 && !normalizedRoutes.find(r => r.is404)) {
+  if (force404 && !normalizedRoutes.find(r => r.path === '404')) {
     normalizedRoutes.push(
       createNormalizedRoute({
-        is404: true,
         path: PATH_404,
       })
     )
@@ -141,11 +141,17 @@ export const normalizeRoutes = (routes, config = {}) => {
   return normalizedRoutes
 }
 
+export const getPageRoutes = config => {
+  console.log(config)
+  return []
+}
+
 // At least ensure the index page is defined for export
-export const makeGetRoutes = config => async (...args) => {
+export const getRoutesForConfig = config => async (...args) => {
   const { getRoutes = async () => DEFAULT_ROUTES } = config
+  const pageRoutes = await getPageRoutes(config)
   const routes = await getRoutes(...args)
-  return normalizeRoutes(routes, config)
+  return normalizeRoutes([...pageRoutes, ...routes], config)
 }
 
 export const buildConfigation = (config = {}) => {
@@ -153,6 +159,7 @@ export const buildConfigation = (config = {}) => {
   config.paths = {
     root: path.resolve(process.cwd()),
     src: 'src',
+    pages: 'pages',
     dist: 'dist',
     devDist: 'tmp/dev-server',
     public: 'public',
@@ -203,9 +210,11 @@ export const buildConfigation = (config = {}) => {
     devBasePath: trimLeadingAndTrailingSlashes(config.devBasePath),
     extractCssChunks: config.extractCssChunks || false,
     inlineCss: config.inlineCss || false,
-    getRoutes: makeGetRoutes(config),
     generated: true,
   }
+
+  // Use the final config to get routes
+  finalConfig.getRoutes = getRoutesForConfig(finalConfig)
 
   // Set env variables to be used client side
   process.env.REACT_STATIC_PREFETCH_RATE = finalConfig.prefetchRate
@@ -242,8 +251,8 @@ const fromFile = (configPath = DEFAULT_PATH_FOR_STATIC_CONFIG, watch) => {
 
 // Retrieves the static.config.js from the current project directory
 export default function getConfig (customConfig, { watch } = {}) {
-  if (typeof customConfig === 'object') {
-    // return a custom config obj
+  if (typeof customConfig !== 'string') {
+    // return a custom config
     return buildConfigation(customConfig)
   }
 

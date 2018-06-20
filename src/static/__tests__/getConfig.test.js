@@ -2,7 +2,7 @@ import getConfig, {
   cutPathToRoot,
   trimLeadingAndTrailingSlashes,
   createNormalizedRoute,
-  makeGetRoutes,
+  getRoutesForConfig,
   buildConfigation,
 } from '../getConfig'
 import defaultConfigDevelopment from '../__mocks__/defaultConfigDevelopment.mock'
@@ -94,9 +94,7 @@ describe('createNormalizedRoute', () => {
 
       describe('when route is 404', () => {
         it('should not throw an error', () => {
-          expect(() =>
-            createNormalizedRoute({ component: '/no/path/', is404: true })
-          ).not.toThrow()
+          expect(() => createNormalizedRoute({ component: '/no/path/', path: '404' })).not.toThrow()
         })
       })
     })
@@ -124,12 +122,12 @@ describe('createNormalizedRoute', () => {
   })
 })
 
-describe('makeGetRoutes', () => {
+describe('getRoutesForConfig', () => {
   describe('when getRoutes is defined on config', () => {
     it('should return routes', async () => {
       const config = { getRoutes: async () => [{ path: '/path' }] }
 
-      const getRoutes = makeGetRoutes(config)
+      const getRoutes = getRoutesForConfig(config)
       const routes = await getRoutes()
 
       expect(routes).toEqual([
@@ -141,7 +139,6 @@ describe('makeGetRoutes', () => {
         },
         {
           hasGetProps: false,
-          is404: true,
           noindex: undefined,
           originalPath: '404',
           path: '404',
@@ -151,10 +148,10 @@ describe('makeGetRoutes', () => {
 
     it('should return routes', async () => {
       const config = {
-        getRoutes: async () => [{ path: '/path' }, { is404: true, path: '404' }],
+        getRoutes: async () => [{ path: '/path' }, { path: '404' }],
       }
 
-      const getRoutes = makeGetRoutes(config)
+      const getRoutes = getRoutesForConfig(config)
       const routes = await getRoutes()
 
       expect(routes).toEqual([
@@ -166,7 +163,6 @@ describe('makeGetRoutes', () => {
         },
         {
           hasGetProps: false,
-          is404: true,
           noindex: undefined,
           originalPath: '404',
           path: '404',
@@ -197,7 +193,7 @@ describe('makeGetRoutes', () => {
       it('should return a flat Array of routes', async () => {
         const config = { getRoutes: async () => routesWithChildren }
 
-        const getRoutes = makeGetRoutes(config)
+        const getRoutes = getRoutesForConfig(config)
         const routes = await getRoutes()
 
         expect(routes).toMatchSnapshot()
@@ -210,7 +206,7 @@ describe('makeGetRoutes', () => {
             tree: true,
           }
 
-          const getRoutes = makeGetRoutes(config)
+          const getRoutes = getRoutesForConfig(config)
           const routes = await getRoutes()
 
           expect(routes).toMatchSnapshot()
@@ -223,7 +219,7 @@ describe('makeGetRoutes', () => {
     it('should return default route', async () => {
       const config = {}
 
-      const getRoutes = makeGetRoutes(config)
+      const getRoutes = getRoutesForConfig(config)
       const routes = await getRoutes()
 
       expect(routes).toEqual([
@@ -237,7 +233,6 @@ describe('makeGetRoutes', () => {
           hasGetProps: false,
           noindex: undefined,
           originalPath: '404',
-          is404: true,
           path: '404',
         },
       ])
@@ -255,10 +250,8 @@ describe('buildConfigation', () => {
   beforeEach(() => {
     reactStaticEnviroment = process.env.REACT_STATIC_ENV
     reactStaticPrefetchRate = process.env.REACT_STATIC_PREFETCH_RATE
-    reactStaticDisableRouteInfoWarning =
-      process.env.REACT_STATIC_DISABLE_ROUTE_INFO_WARNING
-    reactStaticDisableRoutePreFixing =
-      process.env.REACT_STATIC_DISABLE_ROUTE_PREFIXING
+    reactStaticDisableRouteInfoWarning = process.env.REACT_STATIC_DISABLE_ROUTE_INFO_WARNING
+    reactStaticDisableRoutePreFixing = process.env.REACT_STATIC_DISABLE_ROUTE_PREFIXING
     spyProcess = jest.spyOn(process, 'cwd').mockImplementation(() => './root/')
   })
 
@@ -349,7 +342,9 @@ describe('getConfig', () => {
     it('should return a configuration using default file', () => {
       // mapped by the moduleNameMapper in package.js -> src/static/__mocks__/static.config.js
       // default path is 'static.config.js'
-      const configuration = getConfig()
+      const configuration = getConfig({
+        entry: 'path/to/entry/index.js',
+      })
 
       testConfiguration(configuration, {
         ...defaultConfigProduction,

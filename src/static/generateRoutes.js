@@ -82,14 +82,15 @@ export default class Routes extends Component {
 
     const getFullComponentForPath = path => {
       let Comp = getComponentForPath(path)
-      let is404 = path === '404'
+      const is404 = path === '404'
+      let isNotFound
       if (!Comp) {
-        is404 = true
+        isNotFound = true
         Comp = getComponentForPath('404')
       }
       return newProps => (
         Comp
-          ? <Comp {...newProps} {...(is404 ? {is404: true} : {})} />
+          ? <Comp {...newProps} {...{is404, isNotFound}} />
           : null
       )
     }

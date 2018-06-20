@@ -47,7 +47,10 @@ const RouteData = withRouter(
       })()
     loadRouteData = () =>
       (async () => {
-        const { is404, location: { pathname } } = this.props
+        const {
+          is404,
+          location: { pathname },
+        } = this.props
         const path = cleanPath(is404 ? '404' : pathname)
         try {
           await prefetch(path)
@@ -62,7 +65,11 @@ const RouteData = withRouter(
       })()
     render () {
       const {
-        component, render, children, location: { pathname }, ...rest
+        component,
+        render,
+        children,
+        location: { pathname },
+        ...rest
       } = this.props
       let { loaded } = this.state
 
@@ -71,7 +78,11 @@ const RouteData = withRouter(
       let allProps
 
       // Attempt to get routeInfo from window (first-load on client)
-      if (typeof window !== 'undefined' && window.__routeInfo && (window.__routeInfo.path === path || window.__routeInfo.path === '404')) {
+      if (
+        typeof window !== 'undefined' &&
+        window.__routeInfo &&
+        (window.__routeInfo.path === path || window.__routeInfo.path === '404')
+      ) {
         loaded = true // Since these are synchronous, override loading to true
         allProps = window.__routeInfo.allProps
       }
@@ -86,7 +97,7 @@ const RouteData = withRouter(
         allProps = routeInfoByPath[path].allProps
       }
 
-      if (!allProps && !rest.is404 && !warnedPaths[path]) {
+      if (!allProps && path !== '404' && !warnedPaths[path]) {
         warnedPaths[path] = true
         console.warn(
           `RouteData or withRouteData couldn't find any props for path: ${path}. You are either missing a route.getData function or you are relying on RouteData/withRouteData where you don't need to.`
