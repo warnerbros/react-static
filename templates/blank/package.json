@@ -5,17 +5,21 @@
     "start": "react-static start",
     "stage": "react-static build --staging",
     "build": "react-static build",
-    "serve": "serve dist -p 3000 -s"
+    "serve": "serve dist -p 3000 -s",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-hot-loader": "^4.3.12",
-    "react-static": "^6.0.18"
+    "react-static": "^6.0.18",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "eslint-config-react-tools": "1.x.x",
     "serve": "^10.1.1"
-  }
+  },
+  "snyk": true
 }
