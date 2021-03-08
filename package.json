@@ -48,7 +48,7 @@
     "babel-plugin-universal-import": "^3.0.2",
     "case-sensitive-paths-webpack-plugin": "^2.1.2",
     "chalk": "^2.4.1",
-    "chokidar": "^2.0.4",
+    "chokidar": "^3.0.0",
     "circular-dependency-plugin": "^5.0.2",
     "cors": "^2.8.5",
     "css-loader": "^2.0.1",
