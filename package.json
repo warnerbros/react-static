@@ -67,7 +67,7 @@
     "match-sorter": "^2.2.3",
     "minimist": "^1.2.0",
     "mutation-observer": "^1.0.3",
-    "optimize-css-assets-webpack-plugin": "^5.0.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.5",
     "portfinder": "^1.0.20",
     "postcss-flexbugs-fixes": "^4.1.0",
     "postcss-loader": "^3.0.0",
